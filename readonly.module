@@ -12,10 +12,19 @@ define('READONLY_DEFAULT_MSG', 'This website is currently undergoing maintenance
 function readonly_init() {
   global $user;
 
+  if ($user->uid == 1) return;
+
   if (user_is_logged_in() and $user->uid > 1) {
     $user = drupal_anonymous_user();
     readonly_flash_message();
     drupal_goto('user');
+  }
+  elseif (arg(0) == 'user' and arg(1) == 'register') {
+    readonly_flash_message();
+  }
+  elseif (arg(0) == 'store' and arg(1) == 'checkout') {
+    readonly_flash_message();
+    drupal_goto('store');
   }
 }
 

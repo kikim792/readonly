@@ -1,0 +1,55 @@
+<?php
+/**
+ * @file
+ * readonly module.
+ */
+
+define('READONLY_DEFAULT_MSG', 'This website is currently undergoing maintenance. Logins are not available. Please check back soon.');
+
+/**
+ * Implements hook_init().
+ */
+function readonly_init() {
+  global $user;
+
+  if (user_is_logged_in() and $user->uid > 1) {
+    $user = drupal_anonymous_user();
+    readonly_flash_message();
+    drupal_goto('user');
+  }
+}
+
+function readonly_flash_message() {
+  $message = '<tt>* * * * * * * * * * * * * * *</tt><br>'
+           . variable_get('readonly_message', READONLY_DEFAULT_MSG)
+           . '<br><tt>* * * * * * * * * * * * * * *</tt>';
+
+  drupal_set_message($message);
+}
+
+/**
+ * Implements hook_menu().
+ */
+function readonly_menu() {
+  $items = array();
+  $items['admin/config/development/readonly'] = array(
+    'title' => 'Read only mode',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('readonly_admin_setting'),
+    'access arguments' => array('administer site configuration'),
+    'weight' => -99,
+  );
+
+  return $items;
+}
+
+function readonly_admin_setting() {
+  $form['readonly_message'] = array(
+    '#type' => 'textarea',
+    '#title' => t('Read only message'),
+    '#default_value' => variable_get('readonly_message', READONLY_DEFAULT_MSG),
+    '#description' => 'The message will show on user login page if login was successful or if the user was logged in through session.',
+  );
+
+  return system_settings_form($form);
+}

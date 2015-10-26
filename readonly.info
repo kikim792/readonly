@@ -1,0 +1,5 @@
+name = Read only
+description = Kicks out all logged-in users to prevent adding/updating content.
+core = 7.x
+configure = admin/config/development/readonly
+version = 7.x-1.0-beta1
